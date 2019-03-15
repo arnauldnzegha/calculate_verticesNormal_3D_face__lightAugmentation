@@ -16,7 +16,8 @@ class Object3D(object):
 		faces=[]
 		facesT=[]
 		normals=[]
-		f = open("lfw/Serena_Williams/Serena_Williams_0001.obj", "r")
+		#f = open("lfw/Serena_Williams/Serena_Williams_0004.obj", "r")
+		f = open("lfw/Serena_Williams/Serena_Williams_0003.obj", "r")
 		for line in f:
 			elts=line.split()
 			if elts[0]=='v':
@@ -24,14 +25,24 @@ class Object3D(object):
 			if elts[0]=='f':
 				elt1=elts[1].split('/')
 				v1=int(elt1[0])
+				t1=int(elt1[1])
 				elt1=elts[2].split('/')
 				v2=int(elt1[0])
+				t2=int(elt1[1])
 				elt1=elts[3].split('/')
 				v3=int(elt1[0])
+				t3=int(elt1[1])
 				faces.extend([[v1,v2,v3]])
+				facesT.extend([[t1,t2,t3]])
+			if elts[0]=='vt':
+				textures.extend([[float(elts[1]),float(elts[2])]])
+
+
 		self.faces=np.asarray(faces)
+		self.facesT=np.asarray(facesT)
 		self.vertices=np.asarray(vertices)
-		return self.vertices, self.faces
+		self.textures=np.asarray(textures)
+		#print(self.faces)
 
 
 	def calculateFaceNormal(self):
@@ -62,3 +73,8 @@ class Object3D(object):
 		    verticesNor[i]=verticesNor[i]/np.linalg.norm(verticesNor[i])
 		self.verticesNor=verticesNor
 		return self.verticesNor
+
+	def getOBJElements(self):
+		self.readObjetVF()
+		self.calculateFaceNormal()
+		return (self.vertices, self.faces, self.facesT, self.faceNormals, self.textures)
